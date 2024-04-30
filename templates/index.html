@@ -1,0 +1,246 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Holiday Table</title>
+    <style>
+      * {
+          box-sizing: border-box;
+          margin: 0;
+          padding: 0;
+      }
+
+      body {
+          font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+          background-color: #f5f5f5;
+          color: #333;
+          line-height: 1.6;
+      }
+
+      h2 {
+          text-align: center;
+          margin-bottom: 1rem;
+      }
+
+      table {
+          border-collapse: collapse;
+          width: 100%;
+          max-width: 1000px; /* Increased max-width */
+          margin: 0 auto;
+          box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
+          background-color: #fff;
+      }
+
+      tr:nth-child(odd) {
+        background-color: ; /* Set a light grey background color */
+      }
+
+      tr:nth-child(even) {
+        background-color: ; /* Set a light blue background color */
+      }
+
+      th:nth-child(1), /* Target the first "th" element (Date column) */
+      td:nth-child(1), /* Target the first "td" element in each row */
+      th:nth-child(2), /* Target the second "th" element (Day column) */
+      td:nth-child(2), /* Target the second "td" element in each row */
+      th:nth-child(3), /* Target the third "th" element (India Holiday column) */
+      td:nth-child(3), /* Target the third "td" element in each row */
+      th:nth-child(4), /* Target the fourth "th" element (Canada Holiday column) */
+      td:nth-child(4), /* Target the fourth "td" element in each row */
+      th:nth-child(5), /* Target the fifth "th" element (US Holiday column) */
+      td:nth-child(5) { /* Target the fifth "td" element in each row */
+        width: 150px; /* Set the desired width for the "Date" column and all subsequent columns */
+      }
+
+      /* New CSS for sub-column widths */
+      th:nth-child(6) > th, /* Target the "th" elements inside the 6th "th" element (User column) */
+      th:nth-child(6) > td, /* Target the "td" elements inside the 6th "th" element (User column) */
+      th:nth-child(7) > th, /* Target the "th" elements inside the 7th "th" element (User column) */
+      th:nth-child(7) > td { /* Target the "td" elements inside the 7th "th" element (User column) */
+        width: 50%; /* Set equal widths for the two sub-columns */
+      }
+      th:nth-child(6), /* Target the 6th "th" element (User column) */
+      td:nth-child(6) { /* Target the 6th "td" element in each row */
+        border-collapse: collapse; /* Prevent extra space between the two sub-columns */
+      }
+      
+      th, td {
+          border: 1px solid #ccc;
+          padding: 1rem; /* Increased padding */
+          text-align: center;
+      }
+
+      th {
+          background-color: #333;
+          color: #fff;
+      }
+
+      input[type="text"] {
+          width: 100%;
+          padding: 0.5rem;
+          border: 1px solid #ccc;
+          border-radius: 4px;
+      }
+
+      button[type="submit"] {
+          display: block;
+          margin: 1rem auto;
+          padding: 0.5rem 1rem;
+          background-color: #333;
+          color: #fff;
+          border: none;
+          border-radius: 4px;
+          cursor: pointer;
+      }
+
+      .auth-buttons {
+          display: flex;
+          justify-content: center;
+          margin-top: 1rem;
+      }
+
+      .auth-button {
+          margin: 0 0.5rem;
+          padding: 0.5rem 1rem;
+          background-color: #333;
+          color: #fff;
+          border: none;
+          border-radius: 4px;
+          text-decoration: none;
+          font-weight: bold;
+          transition: background-color 0.3s;
+      }
+
+      .auth-button:hover {
+          background-color: #555;
+      }
+
+      .container {
+          max-width: 800px; /* Increased max-width */
+          margin: 0 auto;
+          padding: 20px;
+          text-align: center;
+          background-color: #fff;
+          border-radius: 10px;
+          box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+          margin-top: 100px;
+      }
+
+      .logout-link {
+          display: inline-block;
+          padding: 10px 20px;
+          margin-top: 20px;
+          text-decoration: none;
+          color: #fff;
+          background-color: #007bff;
+          border-radius: 5px;
+          transition: background-color 0.3s ease;
+      }
+
+      .logout-link:hover {
+          background-color: #0056b3;
+      }
+    </style>
+</head>
+<body>
+    {% if session.username %}
+    <div class="container">
+        <p>Welcome, <span id="username">{{ session.username }}</span>!</p>
+        <a href="#" class="logout-link">Logout</a>
+    </div> 
+    <form action="{{ url_for('index') }}" method="POST">
+        <table>
+            <thead>
+                <tr>
+                    <th>Date</th>
+                    <th>Day</th>
+                    <th>India Holiday</th>
+                    <th>Canada Holiday</th>
+                    <th>US Holiday</th>
+                    <th colspan="2">User</th>
+                </tr>
+                <tr>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td>Applicable</td>
+                    <td>Shift Timings</td>
+                </tr>
+            </thead>
+            <tbody>
+                {% for holiday in holidays %}
+                      {% if holiday.day == "Saturday" or holiday.day == "Sunday" %}
+                          <tr style="background-color: lightgrey;">
+                              <td>{{ holiday.date }}</td>
+                              <td>{{ holiday.day }}</td>
+                              <td>{{ holiday.india_holiday }}</td>
+                              <td>{{ holiday.canada_holiday }}</td>
+                              <td>{{ holiday.us_holiday }}</td>
+                              <td>
+                                  <select name="is_shift_allowance_applicable_{{ holiday.date }}", value="{{ holiday.is_shift_allowance_applicable }}">
+                                      <option value="Yes">Yes</option>
+                                      <option value="No (WFH)">No (WFH)</option>
+                                      <option value="No (WFR)">No (WFR)</option>
+                                      <option value="No (PL)">No (PL)</option>
+                                      <option value="No (OH)">No (OH)</option>
+                                      <option value="No (FH)">No (FH)</option>
+                                  </select>
+                              </td>
+                              <td>
+                                  <input type="text" name="shift_timings_{{ holiday.date }}" value="{{ holiday.shift_timings }}">
+                              </td>
+                          </tr>
+                      {% else %}
+                          <tr>
+                              <td>{{ holiday.date }}</td>
+                              <td>{{ holiday.day }}</td>
+                              <td></td>
+                              <td></td>
+                              <td></td>
+                              <td>
+                                  <select name="is_shift_allowance_applicable_{{ holiday.date }}", value="{{ holiday.is_shift_allowance_applicable }}">
+                                      <option value="Yes">Yes</option>
+                                      <option value="No (WFH)">No (WFH)</option>
+                                      <option value="No (WFR)">No (WFR)</option>
+                                      <option value="No (PL)">No (PL)</option>
+                                      <option value="No (OH)">No (OH)</option>
+                                      <option value="No (FH)">No (FH)</option>
+                                  </select>
+                              </td>
+                              <td>
+                                  <input type="text" name="shift_timings_{{ holiday.date }}" value="{{ holiday.shift_timings }}">
+                              </td>
+                          </tr>
+                      {% endif %}
+                {% endfor %}
+            </tbody>
+        </table>
+        <button type="submit">Submit</button>
+    </form>
+    {% else %}
+    <p>You need to be logged in to access this page.</p>
+    <div class="auth-buttons">
+        <a href="{{ url_for('signup') }}" class="auth-button">Sign Up</a>
+        <a href="{{ url_for('login') }}" class="auth-button">Login</a>
+    </div>
+    {% endif %}
+
+  <script>
+      function formatDate(dateString) {
+          const date = new Date(dateString);
+          const options = { year: 'numeric', month: 'long', day: 'numeric' };
+          return date.toLocaleDateString('en-US', options);
+      }
+      // Loop through all table rows
+      const tableRows = document.querySelectorAll('tbody tr');
+      for (const row of tableRows) {
+          const dateCell = row.querySelector('td:nth-child(1)'); // Select the first "td" element (Date column)
+          const dateValue = dateCell.textContent; // Get the current date value
+          const formattedDate = formatDate(dateValue); // Format the date
+          dateCell.textContent = formattedDate; // Update the table cell with the formatted date
+      }
+  </script>
+  
+</body>
+</html>
